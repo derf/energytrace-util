@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include <inttypes.h>
 #include <assert.h>
-#include <MSP430.h>
-#include <MSP430_EnergyTrace.h>
-#include <MSP430_Debug.h>
+#include "MSP430.h"
+#include "MSP430_EnergyTrace.h"
+#include "MSP430_Debug.h"
 
 typedef struct __attribute__((packed))  {
 	uint8_t id;
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 
 
 	// 3. Open the device.
-	MSP430_LoadDeviceDb(NULL); //Required in more recent versions of tilib.
+	//MSP430_LoadDeviceDb(NULL); //Required in more recent versions of tilib.
 	printf("#Opening the device: ");
 	status = MSP430_OpenDevice("DEVICE_UNKNOWN", "", 0, 0, DEVICE_UNKNOWN);
 	printf("#MSP430_OpenDevice() returns %d\n", status);
