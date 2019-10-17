@@ -1,11 +1,16 @@
-TARGET=energytrace
+TARGET = energytrace
 SRC = $(TARGET).c
 
-CFLAGS = -I/usr/include/libmsp430 -lmsp430
+MSP430FLASHER ?= /opt/MSP430Flasher_1.3.15
+
+CC ?= gcc-8
+CFLAGS ?= -O2 -I$(MSP430FLASHER)/Source/Inc -L$(MSP430FLASHER) -lmsp430
 
 all: $(TARGET)
-$(TARGET): $(SRC) 
-	gcc $(CFLAGS) -o $@ $<
+
+$(TARGET): $(SRC)
+	$(CC) $(CFLAGS) -o $@ $<
+
 clean:
 	rm -f $(TARGET)
 

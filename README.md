@@ -28,22 +28,27 @@ filtering the energy measurements leads to more accurate readings than
 the current measurement itself.
 
 # Dependencies
-You'll need MSP430 debug stack (libmsp430.so) and the usual 
-things like make and gcc. Unfortunately, building the MSP430 debug 
-stack is a bit difficult at this time since it's missing some 
-`#include` and triggers a
-[compiler bug](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=71092).
-Using Arch Linux? You're lucky, I've created a PKGBUILD and patches for 
-easy installation: [aur-mspds](https://github.com/carrotIndustries/aur-mspds)
-At the time of writing, the AUR package mspds is broken.
+You'll need MSP430 debug stack (libmsp430.so) and the usual things like make
+and gcc. As building the MSP430 debug stack is a bit difficult at this time,
+this fork realies on the precompiled libmsp430.so provided by TI in its
+[MSP430Flasher](http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430Flasher/latest/index_FDS.html)
+tool. The following instructions are known to work with 32-bit MSP430Flasher
+1.3.7 and 64-bit (x64) MSP430Flasher 1.3.15.
 
 # How do I build and run?
+
+Download and extract the MSP430Flasher archive. Here, we will assume that
+it has been extracted to `/opt/MSP430Flasher_1.3.15`, please adjust the
+path accordingly.
+
 ```
-$ make
+$ make MSP430FLASHER=/opt/MSP430Flasher_1.3.15
 $ ./energytrace <measurement duration in seconds> > energytrace.log
 ```
 
-Use you favourite tool for visualizing and processing the recorded data.
+Add `-m32` to CFLAGS if you're using a 32-bit libmsp430.so variant.
+
+Use your favourite tool for visualizing and processing the recorded data.
 
 ```
 $ gnuplot
