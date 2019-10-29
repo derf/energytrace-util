@@ -88,8 +88,8 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	//status = MSP430_Configure(ET_CURRENTDRIVE_FINE, 1);
-	//printf("#MSP430_Configure(ET_CURRENTDRIVE_FINE, 1) =%d\n", status);
+	status = MSP430_Configure(ET_CURRENTDRIVE_FINE, 1);
+	printf("#MSP430_Configure(ET_CURRENTDRIVE_FINE, 1) =%d\n", status);
 
 	// 2. Set the device Vcc.
 	printf("#Setting the device Vcc: ");
