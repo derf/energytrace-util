@@ -4,9 +4,12 @@
 #include <stdbool.h>
 #include <inttypes.h>
 #include <assert.h>
+#include <signal.h>
 #include "MSP430.h"
 #include "MSP430_EnergyTrace.h"
 #include "MSP430_Debug.h"
+
+volatile int keep_running = 1;
 
 typedef struct __attribute__((packed))  {
 	uint8_t id;
@@ -39,18 +42,38 @@ void usage(char *a0) {
 	printf("usage: %s <measurement duration in seconds>\n", a0);
 }
 
+void handle_signal(int signo)
+{
+	keep_running = 0;
+}
+
 int main(int argc, char *argv[]) {
 	if(argc<2) {
 		usage(argv[0]);
 		return 1;
 	}
 	unsigned int duration = strtod(argv[1], 0);
-	if(duration == 0) {
-		usage(argv[0]);
+
+	struct sigaction signalhandler;
+	sigset_t signalset;
+	if ((sigemptyset(&signalset) == -1)
+			|| (sigaddset(&signalset, SIGTERM) == -1)
+			|| (sigaddset(&signalset, SIGINT) == -1)) {
+		puts("Failed to set up signal masks");
 		return 1;
 	}
-	
-	
+
+	signalhandler.sa_handler = handle_signal;
+	signalhandler.sa_mask = signalset;
+	signalhandler.sa_flags = 0;
+
+	if ((sigaction(SIGTERM, &signalhandler, NULL) == -1)
+			|| (sigaction(SIGINT, &signalhandler, NULL) == -1)) {
+		puts("Failed to set up signal handler");
+		return 1;
+	}
+
+
 	STATUS_T status, secure = STATUS_OK;
 	char* portNumber;
 	int  version;
@@ -119,7 +142,15 @@ int main(int argc, char *argv[]) {
 	status = MSP430_ResetEnergyTrace(ha);
 	printf("#MSP430_ResetEnergyTrace=%d\n", status);
 	
-	sleep(duration);
+	if (duration) {
+		sleep(duration);
+	} else {
+		while (keep_running) {
+			// sleep will be interrupted by the exit signal, so the sleep duration
+			// may be arbitrarily high
+			sleep(120);
+		}
+	}
 	
 	status = MSP430_DisableEnergyTrace(ha);
 	printf("#MSP430_DisableEnergyTrace=%d\n", status);
