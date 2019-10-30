@@ -92,6 +92,7 @@ int main(int argc, char *argv[]) {
 	printf("#MSP430_Configure(ET_CURRENTDRIVE_FINE, 1) =%d\n", status);
 
 	// 2. Set the device Vcc.
+	// Note that MSP430FR5994 always uses 3.3V, regardless of the setting here
 	printf("#Setting the device Vcc: ");
 	status = MSP430_VCC(vcc);
 	printf("#MSP430_VCC(%d) returns %d\n", vcc, status);
