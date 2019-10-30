@@ -27,7 +27,7 @@ void push_cb(void* pContext, const uint8_t* pBuffer, uint32_t nBufferSize) {
 	uint32_t i = 0;
 	while(i < n) {
 		if(ev->id == 8) {
-			printf("%.9e %.9e %.9e %.9e\n",ev->timestamp/1e6, ev->current/1e9, ev->voltage/1e3, ev->energy/1e7);
+			printf("%d %d %d %d\n", ev->timestamp, ev->current, ev->voltage, ev->energy * 100);
 		}
 		ev++;
 		i++;
@@ -124,6 +124,7 @@ int main(int argc, char *argv[]) {
 	printf("# device.vccMaxOp: %d\n", device.vccMaxOp);
 	printf("# device.hasTestVpp: %d\n", device.hasTestVpp);
 	
+	puts("# Timestamp[us] Current[nA] Voltage[mV] Energy[nJ]");
 	
 	EnergyTraceSetup ets = {  ET_PROFILING_ANALOG,                // Gives callbacks of with eventID 8
                       ET_PROFILING_1K,                   // N/A
@@ -149,7 +150,7 @@ int main(int argc, char *argv[]) {
 		while (keep_running) {
 			// sleep will be interrupted by the exit signal, so the sleep duration
 			// may be arbitrarily high
-			sleep(120);
+			sleep(3600);
 		}
 	}
 	
