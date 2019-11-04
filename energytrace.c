@@ -73,7 +73,6 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-
 	STATUS_T status, secure = STATUS_OK;
 	char* portNumber;
 	int  version;

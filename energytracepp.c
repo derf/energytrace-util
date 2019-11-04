@@ -4,9 +4,12 @@
 #include <stdbool.h>
 #include <inttypes.h>
 #include <assert.h>
+#include <signal.h>
 #include "MSP430.h"
 #include "MSP430_EnergyTrace.h"
 #include "MSP430_Debug.h"
+
+volatile int keep_running = 1;
 
 typedef struct __attribute__((packed))  {
 	uint8_t id;
@@ -25,7 +28,7 @@ void push_cb(void* pContext, const uint8_t* pBuffer, uint32_t nBufferSize) {
 	uint32_t i = 0;
 	while(i < n) {
 		if(ev->id == 7) {
-			printf("%016x %.9e %.9e %.9e %.9e\n", ev->state, ev->timestamp/1e6, ev->current/1e9, ev->voltage/1e3, ev->energy/1e7);
+			printf("%016x %d %d %d %d\n", ev->state, ev->timestamp, ev->current, ev->voltage, ev->energy * 100);
 		}
 		ev++;
 		i++;
@@ -38,6 +41,11 @@ void error_cb(void* pContext, const char* pszErrorText) {
 
 void usage(char *a0) {
 	printf("usage: %s <measurement duration in seconds>\n", a0);
+}
+
+void handle_signal(int signo)
+{
+	keep_running = 0;
 }
 
 void check_msp430_error(STATUS_T status) {
@@ -54,12 +62,26 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 	unsigned int duration = strtod(argv[1], 0);
-	if(duration == 0) {
-		usage(argv[0]);
+
+	struct sigaction signalhandler;
+	sigset_t signalset;
+	if ((sigemptyset(&signalset) == -1)
+			|| (sigaddset(&signalset, SIGTERM) == -1)
+			|| (sigaddset(&signalset, SIGINT) == -1)) {
+		puts("Failed to set up signal masks");
 		return 1;
 	}
-	
-	
+
+	signalhandler.sa_handler = handle_signal;
+	signalhandler.sa_mask = signalset;
+	signalhandler.sa_flags = 0;
+
+	if ((sigaction(SIGTERM, &signalhandler, NULL) == -1)
+			|| (sigaction(SIGINT, &signalhandler, NULL) == -1)) {
+		puts("Failed to set up signal handler");
+		return 1;
+	}
+
 	STATUS_T status = STATUS_OK;
 	int32_t cpu_state = 0, cpu_cycles = 0;
 	char* portNumber;
@@ -120,6 +142,7 @@ int main(int argc, char *argv[]) {
 	printf("# device.vccMaxOp: %d\n", device.vccMaxOp);
 	printf("# device.hasTestVpp: %d\n", device.hasTestVpp);
 	
+	puts("# Timestamp[us] Current[nA] Voltage[mV] Energy[nJ]");
 	
 	EnergyTraceSetup ets = {  ET_PROFILING_ANALOG_DSTATE,                // Gives callbacks of with eventID 7
                       ET_PROFILING_10K,                   // N/A
@@ -144,7 +167,15 @@ int main(int argc, char *argv[]) {
 	printf("#MSP430_Run=%d\n", status);
 	check_msp430_error(status);
 	
-	sleep(duration);
+	if (duration) {
+		sleep(duration);
+	} else {
+		while (keep_running) {
+			// sleep will be interrupted by the exit signal, so the sleep duration
+			// may be arbitrarily high
+			sleep(3600);
+		}
+	}
 
 	status = MSP430_State(&cpu_state, 1, &cpu_cycles);
 	printf("#MSP430_State=%d\n", status);
