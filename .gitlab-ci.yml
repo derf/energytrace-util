@@ -11,3 +11,8 @@ build_energytrace:
   - curl -s https://ess.cs.uos.de/static/.gitlab-ci/MSP430Flasher_1.3.15.tar.xz | tar -C /opt -xJf -
   - gcc-8 -Wall -Wextra -O2 -I/opt/msp430/MSP430Flasher_1.3.15/Source/Inc -L/opt/msp430/MSP430Flasher_1.3.15 -lmsp430 -o energytrace energytrace.c
   - gcc-8 -Wall -Wextra -O2 -I/opt/msp430/MSP430Flasher_1.3.15/Source/Inc -L/opt/msp430/MSP430Flasher_1.3.15 -lmsp430 -o energytracepp energytracepp.c
+  artifacts:
+    paths:
+    - energytrace
+    - energytracepp
+    expire_in: 1 year
