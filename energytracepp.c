@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
 	printf("# device.vccMaxOp: %d\n", device.vccMaxOp);
 	printf("# device.hasTestVpp: %d\n", device.hasTestVpp);
 	
-	puts("# Timestamp[us] Current[nA] Voltage[mV] Energy[nJ]");
+	puts("# HardwareState[hexbitmap] Timestamp[us] Current[nA] Voltage[mV] Energy[nJ]");
 	
 	EnergyTraceSetup ets = {  ET_PROFILING_ANALOG_DSTATE,                // Gives callbacks of with eventID 7
                       ET_PROFILING_10K,                   // N/A
