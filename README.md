@@ -10,7 +10,7 @@ IDE. For scripting purposes, EnergyTrace measurements can als obe obtained from
 TI's closed source MSP430 API.
 
 # Output Format
-#
+
 Data is written to stdout in 4 columns:
 
  1. Time [µs]
@@ -18,10 +18,10 @@ Data is written to stdout in 4 columns:
  3. Voltage [mV]
  4. Cumulative Energy [nJ]
 
-The hardware side measures time, energy and (probably) voltage; current data is
-probably calculated somewhere inside the closed source part and heavily
-filtered -- differentiating and low-pass filtering the energy measurements
-leads to far more accurate readings than the provided current data.
+The hardware side measures time, energy and voltage. Current data is calculated
+by the msp430 library on the computer and heavily filtered -- differentiating
+and low-pass filtering the energy measurements leads to far more accurate
+readings than the provided current data.
 
 Debug information is prefixed with a `#`, so it is ignored by gnuplot and the
 like.
@@ -30,7 +30,7 @@ like.
 
 You'll need MSP430 debug stack (libmsp430.so) and the usual things like make
 and a not too recent gcc (version 8 works fine). As building the MSP430 debug
-stack is a bit difficult at this time, this fork realies on the precompiled
+stack is a bit difficult at this time, this fork relies on the precompiled
 libmsp430.so provided by TI in its
 [MSP430Flasher](http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430Flasher/latest/index_FDS.html)
 tool. The following instructions are known to work with 32-bit MSP430Flasher
@@ -55,21 +55,3 @@ If you want to use EnergyTrace++ (with CPU state data), refer to
 energytracepp.c. Note that this decreases the sampling rate from ~3.7 to
 ~1.1 kHz and may significantly delay CPU state transitions, especially when
 waking up from low-power modes.
-
-```
-$ gnuplot
-
-        G N U P L O T
-        Version 5.2 patchlevel 2    last modified 2017-11-01 
-
-        Copyright (C) 1986-1993, 1998, 2004, 2007-2017
-        Thomas Williams, Colin Kelley and many others
-
-        gnuplot home:     http://www.gnuplot.info
-        faq, bugs, etc:   type "help FAQ"
-        immediate help:   type "help"  (plot window: hit 'h')
-
-Terminal type is now 'qt'
-gnuplot> plot "energytrace.log" 
-gnuplot> 
-```
