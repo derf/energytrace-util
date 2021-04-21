@@ -27,7 +27,7 @@ void push_cb(void* pContext, const uint8_t* pBuffer, uint32_t nBufferSize) {
 	uint32_t i = 0;
 	while(i < n) {
 		if(ev->id == 8) {
-			printf("%d %d %d %d\n", ev->timestamp, ev->current, ev->voltage, ev->energy * 100);
+			printf("%lu %u %u %u\n", ev->timestamp, ev->current, ev->voltage, ev->energy * 100);
 		}
 		ev++;
 		i++;
