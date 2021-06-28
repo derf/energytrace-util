@@ -1,32 +1,49 @@
-Some MSP430 launchpads such as the [MSP430FR4133 LaunchPad](http://www.ti.com/tool/msp-exp430fr4133)
-include the so-called "EnergyTrace™ technology". It consists of a 
-software-controlled DC-DC converter that can measure the energy it is 
-delivering. Looks like TI has patents on that:
-[US20130154594](http://www.google.com/patents/US20130154594),
-[US20140253096](http://www.google.com/patents/US20140253096)
+# energytrace-util – MSP430 EnergyTrace CLI
 
-The "official" way to make use of this feature is TI's "Code Composer Studio"
-IDE. For scripting purposes, EnergyTrace measurements can als obe obtained from
-TI's closed source MSP430 API.
+Some MSP430 launchpads such as the [MSP430FR4133
+LaunchPad](http://www.ti.com/tool/msp-exp430fr4133) include the so-called
+"EnergyTrace™ technology". It consists of a software-controlled DC-DC converter
+that can measure the energy it is delivering. See [Automatic Energy Model
+Generation with MSP430
+EnergyTrace](https://ess.cs.uos.de/static/papers/Friesel-2021-CPSIoTBench.pdf)
+for accuracy figures and some odds and ends.
+
+The "official" way to make use of this feature is TI's *Code Composer Studio*
+IDE. For scripting purposes, EnergyTrace measurements can also be obtained from
+TI's closed source MSP430 API. **energytace-util** exposes this API to the
+command line.
+
+## Usage
+
+```
+energytrace <timeout>
+```
+
+If timeout is **0**, run indefinitely. In any case, measurements can be
+terminated gracefully by sending SIGTERM or SIGINT to **energytrace**
+(i.e., by pressing Ctrl+C).
+
+Measurement data is written to stdout.
 
 # Output Format
 
 Data is written to stdout in 4 columns:
 
- 1. Time [µs]
- 2. Current [nA]
- 3. Voltage [mV]
- 4. Cumulative Energy [nJ]
+1. Timestamps (µs) since start of the measurement,
+2. Mean current (nA) over the last ten to thousand intervals,
+3. Mean voltage (mV) with details unknown, and
+4. Cumulative energy (nJ) since start of the measurement.
 
-The hardware side measures time, energy and voltage. Current data is calculated
-by the msp430 library on the computer and heavily filtered -- differentiating
-and low-pass filtering the energy measurements leads to far more accurate
-readings than the provided current data.
+Note that the EnergyTrace hardware and firmware only measure time, voltage, and
+energy. Current readings are calculated by the MSP430 client library and
+heavily filtered. Differentiating and low-pass filtering the energy
+measurements leads to far more accurate readings than the provided current
+data.
 
 Debug information is prefixed with a `#`, so it is ignored by gnuplot and the
-like.
+likes.
 
-# Dependencies
+## Dependencies
 
 You'll need MSP430 debug stack (libmsp430.so) and the usual things like make
 and a not too recent gcc (version 8 works fine). As building the MSP430 debug
@@ -36,7 +53,7 @@ libmsp430.so provided by TI in its
 tool. The following instructions are known to work with 32-bit MSP430Flasher
 1.3.7 and 64-bit (x64) MSP430Flasher 1.3.15.
 
-# How do I build and run?
+## Build
 
 Download and extract the MSP430Flasher archive. Here, we assume that it has
 been extracted to `/opt/MSP430Flasher_1.3.15`, please adjust the path
