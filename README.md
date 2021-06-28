@@ -16,7 +16,7 @@ command line.
 ## Usage
 
 ```
-energytrace <timeout>
+energytrace <timeout in seconds>
 ```
 
 If timeout is **0**, run indefinitely. In any case, measurements can be
